@@ -23,6 +23,13 @@ if(HepMC_FOUND)
     link_directories(${HepMC_LIBRARY_DIRS})
 endif()
 
+# find LBT library
+find_package(LBT REQUIRED)
+if(LBT_FOUND)
+    include_directories(${LBT_INCLUDE_DIRS})
+    link_directories(${LBT_LIBRARY_DIRS})
+endif()
+
 # 查找 OpenMP 支持
 #find_package(OpenMP REQUIRED)
 #if (OPENMP_FOUND)
@@ -49,6 +56,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)      # 安装的执行文件加上RP
 
 
 #set(CMAKE_EXE_LINKER_FLAGS "-static")
+
+# 添加编译优化选项
+add_compile_options("-O3")
 
 add_executable(JetAnalysor main.cpp) # histo.cc)
 target_link_libraries(JetAnalysor HepMC m fastjettools fastjet)
