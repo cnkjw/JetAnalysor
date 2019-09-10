@@ -62,3 +62,9 @@ add_compile_options("-O3")
 
 add_executable(JetAnalysor main.cpp) # histo.cc)
 target_link_libraries(JetAnalysor HepMC m fastjettools fastjet)
+
+add_executable(runLBT runLBT.cpp)
+target_link_libraries(runLBT HepMC LBT HepMCfio)
+
+add_executable(calc calc.cpp)
+target_link_libraries(calc HepMC fastjettools fastjet)
