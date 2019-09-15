@@ -146,10 +146,10 @@ int main(int argc, char *argv[]) {
             
             
             if (tmp_jets.size() != 0 && findZBoson) {
-                cout << "Z boson: " << evt->event_number() << ", " << 
-                    Z_boson.px() << ", " << Z_boson.py() << ", " << Z_boson.pz() 
-                    << ", " << Z_boson.e() << ", " << Z_boson.m() << ", "
-                    << Z_boson.pt() << ", " << Z_boson.eta() << endl; 
+                // cout << "Z boson: " << evt->event_number() << ", " << 
+                //     Z_boson.px() << ", " << Z_boson.py() << ", " << Z_boson.pz() 
+                //     << ", " << Z_boson.e() << ", " << Z_boson.m() << ", "
+                //     << Z_boson.pt() << ", " << Z_boson.eta() << endl; 
                 for (unsigned jet_i = 0; jet_i < tmp_jets.size(); jet_i++) {
                         double delta_phi_value = fabs(tmp_jets[jet_i].phi() - 
                             Z_boson.phi());
