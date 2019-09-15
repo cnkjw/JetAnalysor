@@ -60,11 +60,13 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)      # 安装的执行文件加上RP
 # 添加编译优化选项
 add_compile_options("-O3")
 
+add_compile_options("-fpermissive")
+
 add_executable(JetAnalysor main.cpp) # histo.cc)
 target_link_libraries(JetAnalysor HepMC m fastjettools fastjet)
 
 add_executable(runLBT runLBT.cpp)
-target_link_libraries(runLBT HepMC LBT HepMCfio)
+target_link_libraries(runLBT HepMC LBT ) #HepMCfio)
 
 add_executable(calc calc.cpp)
 target_link_libraries(calc HepMC fastjettools fastjet)
