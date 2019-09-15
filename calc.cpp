@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
             )
         );
         double Z_phi = acos((Z_daughter_1_x + Z_daughter_2_x) / Z_pT);
-        if ((Z_daughter_2_x + Z_daughter_1_x) < 0) Z_phi = 2 * PI - Z_phi;
+        if ((Z_daughter_2_y + Z_daughter_1_y) < 0) Z_phi = 2 * PI - Z_phi;
 
         // if (abs(Z_daughter_pdg_code) == 11 || abs(Z_daughter_pdg_code) == 13) {
         //     if (Z_mass >= 70.0 && Z_mass <=110 && Z_pT >= 60 ) {
