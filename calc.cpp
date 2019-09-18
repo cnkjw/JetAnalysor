@@ -27,8 +27,11 @@ JetDefinition jet_def(antikt_algorithm, R_jet);
 Selector select_akt = SelectorAbsEtaMax(1.6) && SelectorPtMin(30.);
 
 double weight_total = 0.;
-double phi_bin[9] = {0, 0.635, 1.25, 1.72, 2.20, 2.51, 2.82, 2.98, 3.14};
-double weight_for_bin[9] = {0.};
+double phi_bin[10] = {0, 0.31, 0.94, 1.25, 1.72, 2.20, 2.51, 2.82, 2.98, 3.14};
+double weight_for_bin[10] = {0.};
+
+double x_bin[10] = {0.10, 0.30, 0.50, 0.70, 0.90, 1.10, 1.30, 1.50, 1.70, 1.90};
+double weight_for_bin_for_x_jz[10] = {0.};
 
 
 int main(int argc, char *argv[]) {
@@ -150,9 +153,16 @@ int main(int argc, char *argv[]) {
                 for (const auto jet : jets) {
                     double delta_phi = fabs(jet.phi() - Z_phi);
                     delta_phi = delta_phi > PI ? 2 * PI - delta_phi : delta_phi;
-                    for (unsigned i = 0; i < 8; i++) {
+                    for (unsigned i = 0; i < 9; i++) {
                         if (delta_phi >= phi_bin[i] && delta_phi < phi_bin[i + 1]) {
                             weight_for_bin[i + 1] += weight0 / weight2;
+                        }
+                        if (delta_phi > 7 * PI / 8.0) {
+                            double x_jZ = jet.perp() / Z_pT;
+                            // cout << "Found!: " << x_jZ << endl;
+                            if (x_jZ >= x_bin[i] && x_jZ < x_bin[i + 1]) {
+                                weight_for_bin_for_x_jz[i + 1] += weight0 / weight2;
+                            }
                         }
                     }
                 }
@@ -166,12 +176,18 @@ int main(int argc, char *argv[]) {
     const char *out_delta_phi_dist_file = "deltaPhiDist.dat";
     delta_phi_dist_file.open(out_delta_phi_dist_file);
 
-    for(unsigned i = 1; i < 9; i++) {
-        cout << "weight_for_bin: " << weight_for_bin[i] 
-            << ", phi_bin[i]: " << phi_bin[i] << ", "
-            << "phi_bin[i - 1]: " << phi_bin[i - 1] << endl;
+    std::ofstream transverse_momentum_dist_file;
+    const char *out_trans_mome_dist_file = "transverse_momentum_dist_file.dat";
+    transverse_momentum_dist_file.open(out_trans_mome_dist_file);
+
+    for(unsigned i = 1; i < 10; i++) {
+        // cout << "weight_for_bin: " << weight_for_bin[i] 
+        //     << ", phi_bin[i]: " << phi_bin[i] << ", "
+        //     << "phi_bin[i - 1]: " << phi_bin[i - 1] << endl;
         delta_phi_dist_file << phi_bin[i]  
             << ", " << weight_for_bin[i] / weight_total / (phi_bin[i] - phi_bin[i - 1]) << endl;
+        transverse_momentum_dist_file << x_bin[i] << ", " 
+            << weight_for_bin_for_x_jz[i] / weight_total / (x_bin[i] - x_bin[i - 1]) << endl;
     }
 
     return 0;
