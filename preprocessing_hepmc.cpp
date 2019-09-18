@@ -6,6 +6,18 @@
 #include <HepMC/IO_GenEvent.h>
 #include <HepMC/GenEvent.h>
 
+std::string get_file_name(std::string filepath) {
+    if (!filepath.empty()) {
+        int location_point = filepath.find_last_of('.');
+        int location_filename = filepath.find_last_of('/');
+        std::string file_name = filepath.substr(location_filename + 1, 
+            location_point - location_filename - 1);
+        return file_name;
+    } else {
+        return "NULL";
+    }
+}
+
 struct Particle {
     int pdg_code;
     double px;
@@ -26,17 +38,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    #pragma omp parallel for
     for (int file_num = 1; file_num < argc; file_num++) {
 
         const char *hepmc_in = argv[file_num];
         HepMC::IO_GenEvent ascii_in(hepmc_in, std::ios::in);
         HepMC::GenEvent* evt = ascii_in.read_next_event();
 
-        const char *output_suffix = "-OUT.dat";
-        const std::string &out = static_cast<std::string>(hepmc_in) + std::string(output_suffix);
+        std::string output = static_cast<std::string>("./Output/") + 
+            get_file_name(static_cast<std::string>(hepmc_in)) + 
+            static_cast<std::string>("-Prep.dat");
         std::ofstream out_file;
-        out_file.open(out.c_str());
+        out_file.open(output.c_str());
 
         int fact_event_number = 0;
 
@@ -93,7 +105,9 @@ int main(int argc, char *argv[]) {
                 out_file.flush();
             }
         }
-        std::cout << "The file: " << hepmc_in << "preprocess successful!" << std::endl;
+        std::cout << "The file: " 
+            << get_file_name(static_cast<std::string>(hepmc_in)) 
+            << "preprocess successful!" << std::endl;
         out_file.close();
     }
 }
