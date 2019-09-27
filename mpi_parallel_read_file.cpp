@@ -106,9 +106,11 @@ int main(int argc, char *argv[])
     std::cout << '\n';
 
     for (int i = 0; i < send_count[rank]; i++) {
+    // for (int i = 0; i < 1; i++) {
         
         // 待处理文件名
         const char *hepmc_in = argv[locale_file_index[i]];
+        // const char *hepmc_in = argv[1];
 
         std::cout << "Rank: " << rank << ", File name: " 
             << hepmc_in << std::endl;
@@ -126,11 +128,11 @@ int main(int argc, char *argv[])
         out_file.open(output);
 
         HepMC::IO_GenEvent ascii_in(hepmc_in, std::ios::in);
-        std::cout << "Rank: " << rank << " open file, status 1!" << std::endl;
+        // std::cout << "Rank: " << rank << " open file, status 1!" << std::endl;
         HepMC::GenEvent* evt = ascii_in.read_next_event();
 
-        // MPI_Barrier(MPI_COMM_WORLD);
-        std::cout << "Rank: " << rank << " open file, status 2!" << std::endl;
+        // // MPI_Barrier(MPI_COMM_WORLD);
+        // std::cout << "Rank: " << rank << " open file, status 2!" << std::endl;
 
         int fact_event_number = 0;
         while (evt) {
@@ -139,10 +141,12 @@ int main(int argc, char *argv[])
             std::vector<Particle> mZ_daughter;
             bool isGoodEvent = false;
 
-            // std::cout << "Rank: " << rank << " prep" << std::endl;
+            // std::cout << "Number: " << evt->event_number() << std::endl;
 
             for (HepMC::GenEvent::particle_iterator p = evt->particles_begin();
                     p != evt->particles_end(); ++p) {
+                
+                // std::cout << "Found 1 " << std::endl;
                 if ( isFinal(*p) && ( abs((*p)->pdg_id()) == 11 || abs((*p)->pdg_id()) == 13 ) ) {
                     Particle tmp = {(*p)->pdg_id(), (*p)->momentum().px(), (*p)->momentum().py(), 
                         (*p)->momentum().pz(), (*p)->momentum().e(), (*p)->generated_mass()};
@@ -163,11 +167,14 @@ int main(int argc, char *argv[])
                     fact_event_number++;
                     isGoodEvent = true;
                 } else {
+                    delete evt;
+                    ascii_in >> evt;
                     continue;
                 }
             }
 
             if (isGoodEvent) {
+                // std::cout << "Yes is Good: " << rank << std::endl;
                 int particles_number = mZ_daughter.size() + mParticles.size();
                 out_file << fact_event_number << " " << particles_number << " "
                     << (evt->weights())[0] << " " << (evt->weights())[1] << " "
@@ -187,11 +194,16 @@ int main(int argc, char *argv[])
                 }
                 out_file.flush();
             }
+
+            delete evt;
+            ascii_in >> evt;
         }
         out_file.close();
     }
 
-    // MPI_Barrier(MPI_COMM_WORLD);
+    std::cout << " finished!" << std::endl;
+
+    MPI_Barrier(MPI_COMM_WORLD);
 
     delete []send_count;
     delete []global_file_index;
